@@ -1,0 +1,53 @@
+"horror"
+{
+	"base"			"base"
+	"title"			"Horror Maps"
+	"maps"			"^hr_|^horror_"
+	"menusystem"	"1"
+	"workshopid"	"1731918025"
+	
+	"settings"
+	{
+		
+		1
+		{
+			"name"		"horror_randomplayerModel"
+			"text"		"Random player model"
+			"help"		"If enabled, Player spawn will become a random model"
+			"type"		"CheckBox"
+			"default"	"0"
+		}
+		2
+		{
+			"name"		"horror_player_ff"
+			"text"		"Player teammate damage"
+			"help"		"If enabled, Teammate attack will receive damage"
+			"type"		"CheckBox"
+			"default"	"0"
+		}
+		3
+		{
+			"name"		"horror_ReSpawnTime"
+			"text"		"Players re-spawn time"
+			"help"		"Players re-spawn time"
+			"type"		"Numeric"
+			"default"	"30"
+		}
+		4
+		{
+			"name"		"horror_ondeathdropweapon"
+			"text"		"Player drop weapons after death"
+			"help"		"If enabled, Player will drop all weapons on his body after death"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+		5
+		{
+			"name"		"horror_sprint_durable"
+			"text"		"Players sprint durable"
+			"help"		"Players sprint durable"
+			"type"		"Numeric"
+			"default"	"200"
+		}
+	}
+}
