@@ -17,8 +17,16 @@ local cantruncom = {
 
 local isw = {}
 
-local old = engine.ActiveGamemode
-function engine.ActiveGamemode()
+engine.__oldActiveGamemode = engine.ActiveGamemode
+function engine.ActiveGamemode(b,...)
+	if b then
+		return engine.__oldActiveGamemode(...)
+	end
+
+	if string.StartWith(game.GetMap(),'coop_') then
+		return 'coopgamemode'
+	end
+
 	return 'sandbox'
 end
 
@@ -26,7 +34,7 @@ local function ofunc(s)
 	for k,v in pairs(cantruncom) do
 		if string.find(s,v) then
 			if !isw[v] then
-				MsgC(Color(255,90,90),'[Horror Maps] Gamemode cannot use this console command! ('..s..')\n')
+				Horror.Error('Gamemode cannot use this console command! ('..s..')')
 
 				isw[v] = true
 			end

@@ -114,15 +114,19 @@ local PLAYER_LINE = {
 			return
 		end
 		surface.SetDrawColor(Color(200,200,200,200))
+
 		if self.Player:Team() == TEAM_CONNECTING then
 			surface.SetDrawColor(Color(200,200,200,200))
 		end
+
 		if self.Player:IsAdmin() then
 			surface.SetDrawColor(Color(100,255,100,200))
 		end
+
 		if !self.Player:Alive() then
 			surface.SetDrawColor(Color(230,100,100,200))
 		end
+
 		surface.DrawRect(0,0,w,h)
 	end
 }
@@ -200,28 +204,39 @@ local SCORE_BOARD = {
 		self.frame.Scores = self.frame:Add('DScrollPanel')
 		self.frame.Scores:Dock(FILL)
 		
-		self.Header2 = self.frame2:Add('Panel')
-		self.Header2:Dock(TOP)
-		self.Header2:SetHeight(60)
-		
-		self.MapName = self.Header2:Add('DLabel')
+		local mapicon = 'maps/thumb/'..game.GetMap()..'.png'
+
+		if Material(mapicon):IsError() then
+			mapicon = 'maps/thumb/noicon.png'
+		end
+
+		local w,h = self.frame2:GetSize()
+
+		self.Mapicon = self.frame2:Add('Material')
+		self.Mapicon:SetMaterial(mapicon)
+		self.Mapicon:Dock(TOP)
+		self.Mapicon:DockMargin(380,10,380,5)
+		self.Mapicon:SetHeight(300)
+		self.Mapicon.AutoSize = false
+		self.Mapicon:SetColor(Color(255,255,255,100))
+
+		self.MapName = self.frame2:Add('DLabel')
 		self.MapName:SetFont('QTG_hr_ScoreboardDefault')
 		self.MapName:SetTextColor(Color(255,255,255,255))
-		self.MapName:Dock(FILL)
-		self.MapName:SetHeight(60)
-		self.MapName:SetContentAlignment(5)
+		self.MapName:Dock(TOP)
+		self.MapName:DockMargin(10,0,10,0)
+		self.MapName:SetContentAlignment(4)
 		self.MapName:SetExpensiveShadow(2,Color(0,0,0,200))
 		self.MapName:SetText('Current map: '..game.GetMap())
-		
-		local Mapicon = 'maps/thumb/'..game.GetMap()..'.png'
-		if Material(Mapicon):IsError() then
-			Mapicon = 'maps/thumb/noicon.png'
-		end
-		self.Mapicon = self.frame2:Add('Material')
-		self.Mapicon:SetPos(10,10)
-		self.Mapicon:SetSize(300,300)
-		self.Mapicon:SetMaterial(Mapicon)
-		self.Mapicon.AutoSize = false
+
+		self.mapmission = self.frame2:Add('DLabel')
+		self.mapmission:SetFont('QTG_hr_ScoreboardDefault')
+		self.mapmission:SetTextColor(Color(255,255,255,255))
+		self.mapmission:Dock(TOP)
+		self.mapmission:DockMargin(10,0,10,0)
+		self.mapmission:SetContentAlignment(4)
+		self.mapmission:SetExpensiveShadow(2,Color(0,0,0,200))
+		self.mapmission:SetText('Current mission: Make sure all players survive')
 	end,
 
 	PerformLayout = function(self)
@@ -235,11 +250,14 @@ local SCORE_BOARD = {
 
 	Think = function( self, w, h )
 		self.Name:SetText(GetHostName())
-		local plyrs = player.GetAll()
-		local plysn = 0
-		for id, pl in pairs(plyrs) do
-			plysn = plysn+1
-			self.NumPlayers:SetText('Players: '..plysn..'/'..game.MaxPlayers())
+
+		if !self.__plynum or self.__plynum != #player.GetAll() then
+			self.__plynum = #player.GetAll()
+
+			self.NumPlayers:SetText('Players: '..self.__plynum..'/'..game.MaxPlayers())
+		end
+
+		for id, pl in pairs(player.GetAll()) do
 			if IsValid(pl.ScoreEntry) then continue end
 
 			pl.ScoreEntry = vgui.CreateFromTable(PLAYER_LINE,pl.ScoreEntry)
@@ -267,6 +285,7 @@ end
 function GM:ScoreboardHide()
 	if IsValid(g_Scoreboard) then
 		g_Scoreboard:Hide()
+		-- g_Scoreboard:Remove()
 	end
 end
 

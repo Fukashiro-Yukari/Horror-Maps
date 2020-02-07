@@ -72,23 +72,19 @@ function GM:DoPlayerDeath(p,a,c)
 	end
 
 	p:SetNW2Float('QTG_Horror_ReSpawnTime',CurTime()+Retime)
-	p:QTGAddNotify('You are death, please wait '..Retime..' seconds!',0,5,0)
-
-	local alive = 0
-
-	for k,v in pairs(player.GetAll()) do
-		if v:Alive() then
-			alive = alive+1
-		end
-	end
-
-	if alive <= 0 then
-		Horror:MissionFailed()
-	end
+	p:SendLua('surface.PlaySound(\'horror/player_death.wav\')')
 end
+
+local lookmode = {
+	[OBS_MODE_CHASE] = OBS_MODE_IN_EYE,
+	[OBS_MODE_IN_EYE] = OBS_MODE_ROAMING,
+	[OBS_MODE_ROAMING] = OBS_MODE_CHASE
+}
 
 local KeyPressFunc = {
 	[IN_ATTACK] = function(p)
+		if p._smode == OBS_MODE_ROAMING then return end
+
 		local t = GetPreviousPlayer(p:GetObserverTarget())
 
 		if IsValid(t) and t:IsPlayer() then
@@ -98,6 +94,8 @@ local KeyPressFunc = {
 		end
 	end,
 	[IN_ATTACK2] = function(p)
+		if p._smode == OBS_MODE_ROAMING then return end
+
 		local t = GetNextPlayer(p:GetObserverTarget())
 
 		if IsValid(t) and t:IsPlayer() then
@@ -106,27 +104,33 @@ local KeyPressFunc = {
 			p:SetupHands(t)
 		end
 	end,
-	[IN_RELOAD] = function(p)
-		local t = p:GetObserverTarget()
-		if !IsValid(t) or !t:IsPlayer() then return end
-
-		if !p._smode or p._smode == OBS_MODE_CHASE then
-			p._smode = OBS_MODE_IN_EYE
-		elseif p._smode == OBS_MODE_IN_EYE then
+	[IN_JUMP] = function(p)
+		if !p._smode then
 			p._smode = OBS_MODE_CHASE
 		end
-		
-		p:Spectate(p._smode)
-		p:SetupHands(t)
-	end,
-	[IN_JUMP] = function(p)
-		if p:GetMoveType() != MOVETYPE_NOCLIP then
-			p:SetMoveType(MOVETYPE_NOCLIP)
+
+		if lookmode[p._smode] then
+			p._smode = lookmode[p._smode]
 		end
-	end,
-	[IN_DUCK] = function(p)
-		p:Spectate(OBS_MODE_ROAMING)
-		p:SpectateEntity(nil)
+
+		local t = p:GetObserverTarget()
+		if !IsValid(t) or !t:IsPlayer() then
+			t = GetNextPlayer(p)
+		end
+		
+		if IsValid(t) and t:IsPlayer() then
+			p:Spectate(p._smode)
+			p:SpectateEntity(p._smode != OBS_MODE_ROAMING and t or nil)
+
+			if p._smode != OBS_MODE_ROAMING then
+				p:SetupHands(t)
+			elseif p:GetMoveType() != MOVETYPE_NOCLIP then
+				p:SetMoveType(MOVETYPE_NOCLIP)
+			end
+		else
+			p:Spectate(OBS_MODE_ROAMING)
+			p:SpectateEntity(nil)
+		end
 	end
 }
 

@@ -12,6 +12,21 @@ end
 function GM:Tick()
 end
 
+local rclasst = {
+	['npc_poisonzombie'] = true,
+	['npc_headcrab'] = true,
+	['npc_headcrab_fast'] = true,
+	['npc_headcrab_black'] = true,
+	['npc_headcrab_poison'] = true,
+}
+
+local bclasst = {
+	['npc_zombie_torso'] = true,
+	['npc_zombie'] = true,
+	['npc_fastzombie'] = true,
+	['npc_zombine'] = true
+}
+
 function GM:PlayerTick(p,m)
 	local dist = p:GetVelocity():LengthSqr()
 
@@ -26,6 +41,30 @@ function GM:PlayerTick(p,m)
 	local sprint = Horror.GetConvar('sprint_durable')
 	
 	if SERVER then
+		local alive = 0
+
+		for k,v in pairs(player.GetAll()) do
+			if v:Alive() then
+				alive = alive+1
+			end
+		end
+
+		if alive <= 0 then
+			Horror.MissionFailed('All players are dead')
+		end
+		
+		if Horror.__noheadcrabs then
+			for k,v in pairs(ents.GetAll()) do
+				if rclasst[v:GetClass()] then
+					SafeRemoveEntity(v)
+				end
+		
+				if bclasst[v:GetClass()] then
+					v:SetBodygroup(1,0)
+				end
+			end
+		end
+
 		if istable(Horror.__agivewept) then
 			for k,v in pairs(Horror.__agivewept) do
 				if !p:HasWeapon(v) and p:Alive() then

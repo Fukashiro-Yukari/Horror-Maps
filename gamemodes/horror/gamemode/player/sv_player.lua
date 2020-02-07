@@ -189,7 +189,7 @@ function GM:PlayerSpeed(p,n)
 end
 
 function GM:PlayerDeathThink(p,e,a)
-	if p:GetNW2Float('QTG_Horror_ReSpawnTime') < CurTime() and !p:GetNW2Bool('qtg_hr_missionfailed') then
+	if p:GetNW2Float('QTG_Horror_ReSpawnTime') < CurTime() and p:GetNW2String('qtg_hr_missionfailed') == '' then
 		p:Spawn()
 
 		return true
