@@ -6,9 +6,7 @@ local t = _G[tname]
 t.Name = 'Horror Maps'
 t.Author = 'Neptune QTG'
 t.IsGM = true
-t.Path = {
-	{'horror','sh'}
-}
+t.Path = {}
 
 if t.IsGM then
 	setmetatable(GM,{__index = function(tbl,k) return rawget(t,k) end})
