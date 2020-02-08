@@ -80,7 +80,7 @@ function GM:DoPlayerDeath(p,a,c)
 		p.__deathsound = CreateSound(p,'horror/player_death.wav',f)
 	end
 
-	p.__deathsound:SetSoundLevel(SNDLVL_NONE)
+	p.__deathsound:SetSoundLevel(0)
 	p.__deathsound:Play()
 end
 

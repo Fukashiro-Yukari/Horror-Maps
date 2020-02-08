@@ -67,7 +67,7 @@ function Horror.MissionFailed(s)
         Horror.__missionfailedsound = CreateSound(game.GetWorld(),'horror/mission_failed.wav',f)
     end
 
-    Horror.__missionfailedsound:SetSoundLevel(SNDLVL_NONE)
+    Horror.__missionfailedsound:SetSoundLevel(0)
     Horror.__missionfailedsound:Play()
 
 	for k,v in pairs(player.GetAll()) do
