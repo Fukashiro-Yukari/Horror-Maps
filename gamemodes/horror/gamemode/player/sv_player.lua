@@ -190,6 +190,10 @@ end
 
 function GM:PlayerDeathThink(p,e,a)
 	if p:GetNW2Float('QTG_Horror_ReSpawnTime') < CurTime() and p:GetNW2String('qtg_hr_missionfailed') == '' then
+		if IsValid(p.__deathsound) then
+			p.__deathsound:Stop()
+		end
+
 		p:Spawn()
 
 		return true

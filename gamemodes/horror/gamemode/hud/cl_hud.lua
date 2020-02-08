@@ -96,13 +96,17 @@ local sp
 local sp2
 local sprint = Horror.GetConvar('sprint_durable')
 
-local function drawtext(s,f,x,y,c,t,t2)
-	draw.SimpleText(s,f,x+2,y+2,Color(0,0,0,c.a-55),t,t2)
+local function drawtext(s,f,x,y,c,t,t2,n)
+	if !n then
+		n = 3
+	end
+
+	draw.SimpleText(s,f,x+n,y+n,Color(0,0,0,c.a-55),t,t2)
 	draw.SimpleText(s,f,x,y,c,t,t2)
 end
 
 function GM:HUDPaint()
-	hook.Run('HUDDrawTargetID')
+	-- hook.Run('HUDDrawTargetID')
 	hook.Run('HUDDrawPickupHistory')
 	hook.Run('DrawDeathNotice',0.85,0.04)
 	
@@ -115,6 +119,7 @@ function GM:HUDPaint()
 	
 	if drawply then
 		local att = p:GetAttachment(1)
+
 		if att then
 			pos = att.Pos:ToScreen()
 		end
@@ -122,6 +127,7 @@ function GM:HUDPaint()
 		local vm = p:GetViewModel()
 		if IsValid(vm) then
 			local att = vm:GetAttachment(1)
+
 			if att then
 				pos = att.Pos:ToScreen()
 			end
@@ -135,8 +141,11 @@ function GM:HUDPaint()
 		local x,h = 100,100
 		local y2 = ScrH()-h/1.1
 		local text,text2 = 'You are dead','Respawn Time '..string.ToMinutesSeconds(retime)
-		local text3,text4 = 'Left button: Watch the next player','Right button: Watch the previous player'
-		local text5 = 'Space key: Switch viewing mode'
+		local hint = {
+			'Left button: Watch the next player',
+			'Right button: Watch the previous player',
+			'Space key: Switch viewing mode'
+		}
 
 		if retime < 1 then
 			text2 = 'Ready for respawn'
@@ -146,19 +155,16 @@ function GM:HUDPaint()
 		surface.DrawRect(0,0,ScrW(),h)
 		surface.DrawRect(0,ScrH()-h,ScrW(),h)
 
+		drawtext('C','QTG_hr_deathicon',50,h/4,Color(255,0,0,200),TEXT_ALIGN_CENTER)
 		drawtext(text,'QTG_hr_Ammo1',x,h/4,Color(255,0,0,200),TEXT_ALIGN_LEFT)
 
-		drawtext(text2,'QTG_hr_Ammo1',(ScrW()-x),h/4,Color(255,255,255,200),TEXT_ALIGN_RIGHT)
+		drawtext(text2,'QTG_hr_Ammo1',(ScrW()-x),h/4,Color(255,0,0,200),TEXT_ALIGN_RIGHT)
 
-		drawtext(text3,'QTG_hr_HpArN',x,y2,Color(255,255,255,200),TEXT_ALIGN_LEFT)
+		for k,v in pairs(hint) do
+			drawtext(v,'QTG_hr_HpArN',x,y2,Color(255,0,0,200),TEXT_ALIGN_LEFT,nil,2)
 
-		y2 = y2+18
-
-		drawtext(text4,'QTG_hr_HpArN',x,y2,Color(255,255,255,200),TEXT_ALIGN_LEFT)
-
-		y2 = y2+18
-
-		drawtext(text5,'QTG_hr_HpArN',x,y2,Color(255,255,255,200),TEXT_ALIGN_LEFT)
+			y2 = y2+18
+		end
 	end
 
 	if LocalPlayer():GetNW2String('qtg_hr_missionfailed') != '' then
@@ -169,14 +175,10 @@ function GM:HUDPaint()
 		drawtext(LocalPlayer():GetNW2String('qtg_hr_missionfailed'),'QTG_hr_MissionFailed2',ScrW()/2,ScrH()/2+65,Color(255,255,255,200),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	
-	if IsValid(t) and t:IsPlayer() then
+	if LocalPlayer():GetNW2String('qtg_hr_missionfailed') == '' and IsValid(t) and t:IsPlayer() then
 		p = t
-		surface.SetFont('QTG_hr_SpectateName')
-		local n = t:Name()
-		local x = surface.GetTextSize(n)
-		surface.SetTextPos(ScrW()/2-x/2,ScrH()-75)
-		surface.SetTextColor(250,250,250)
-		surface.DrawText(n)
+
+		drawtext(t:Name(),'QTG_hr_SpectateName',ScrW()/2,ScrH()-50,Color(255,0,0,200),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	
 	hp = p:Alive() and p:Health() or 0
@@ -190,7 +192,7 @@ function GM:HUDPaint()
 	sp = p:GetNW2Float('QTG_hr_sprint_durable')/sprint:GetFloat()*100
 	sp2 = (1-p:GetNW2Float('QTG_hr_sprint_durable')/sprint:GetFloat())*100
 	
-	if IsValid(t) and t:IsPlayer() then
+	if LocalPlayer():GetNW2String('qtg_hr_missionfailed') == '' and IsValid(t) and t:IsPlayer() then
 		if hp > 0 then
 			draw.SimpleText(hp,'QTG_hr_HpArN',41.5,ScrH()-180,Color(0,0,0,200),TEXT_ALIGN_CENTER)
 			draw.SimpleText(hp,'QTG_hr_HpArN',40.5,ScrH()-181,Color(255,0,0,200),TEXT_ALIGN_CENTER)
@@ -203,6 +205,21 @@ function GM:HUDPaint()
 	end
 	
 	if !p:Alive() then return end
+
+	local te = p:GetEyeTrace().Entity
+
+	if IsValid(te) and te:IsPlayer() then
+		local pos = {x = ScrW()/2,y = ScrH()/2+50}
+		local pos2 = (te:GetPos()+Vector(0,0,te:OBBCenter().z+10)):ToScreen()
+		local w,h = 200,100
+
+		if pos2.visible then
+			pos = pos2
+		end
+
+		drawtext(te:Name(),'QTG_hr_trName',pos.x,pos.y,Color(255,0,0,200),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		drawtext(te:Health()..' %','QTG_hr_trhp',pos.x,pos.y+20,Color(255,0,0,200),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	end
 
 	local x,y = 30,ScrH()-152
 	
@@ -244,8 +261,7 @@ function GM:HUDPaint()
 			surface.DrawRect(x+1,animnum('ary3',y+1+ary3),20,animnum('ar3',ar < 300 and ar-200 or 100))
 		end
 		
-		draw.SimpleText('*','QTG_hr_HpAr',x+11.5,ScrH()-60,Color(0,0,0,200),TEXT_ALIGN_CENTER)
-		draw.SimpleText('*','QTG_hr_HpAr',x+10.5,ScrH()-61,Color(0,50,255,100),TEXT_ALIGN_CENTER)
+		drawtext('*','QTG_hr_HpAr',x+10.5,ScrH()-61,Color(0,50,255,100),TEXT_ALIGN_CENTER)
 	end
 	
 	if p:GetNW2Float('QTG_hr_sprint_durable') < sprint:GetFloat() then
@@ -257,8 +273,7 @@ function GM:HUDPaint()
 		surface.SetDrawColor(200,200,0,200)
 		surface.DrawRect(x+1,animnum('spy',y+1+sp2),20,animnum('sp',sp))
 		
-		draw.SimpleText('D','QTG_hr_HpAr',x+11.5,ScrH()-60,Color(0,0,0,200),TEXT_ALIGN_CENTER)
-		draw.SimpleText('D','QTG_hr_HpAr',x+10.5,ScrH()-61,Color(200,200,0,100),TEXT_ALIGN_CENTER)
+		drawtext('D','QTG_hr_HpAr',x+10.5,ScrH()-61,Color(200,200,0,100),TEXT_ALIGN_CENTER)
 	end
 
 	-- draw.SimpleText('a','QTG_hr_hudicon',x+50,ScrH()-60,Color(0,0,0,200),TEXT_ALIGN_CENTER)
@@ -301,7 +316,7 @@ function GM:HUDPaint()
 		end
 
 		if !bool then
-			draw.SimpleText('Press '..string.upper(input.LookupBinding('+use') or 'e')..' key to pick up','QTG_hr_Ammo1',ScrW()/2,ScrH()/2+75,Color(255,255,255,255),TEXT_ALIGN_CENTER)
+			drawtext('Press '..string.upper(input.LookupBinding('+use') or 'e')..' key to pick up','QTG_hr_Ammo1',ScrW()/2,ScrH()/2+75,Color(255,255,255,255),TEXT_ALIGN_CENTER)
 		end
 	end
 	

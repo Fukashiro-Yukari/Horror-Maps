@@ -60,13 +60,26 @@ function Horror.MissionFailed(s)
 
     Horror.__restarting = true
 
+    if !IsValid(Horror.__missionfailedsound) then
+        local f = RecipientFilter()
+        f:AddAllPlayers()
+
+        Horror.__missionfailedsound = CreateSound(game.GetWorld(),'horror/mission_failed.wav',f)
+    end
+
+    Horror.__missionfailedsound:SetSoundLevel(SNDLVL_NONE)
+    Horror.__missionfailedsound:Play()
+
 	for k,v in pairs(player.GetAll()) do
         v:ScreenFade(SCREENFADE.OUT,color_black,fadeTime,reloadtime)
         v:Freeze(true)
-        v:SendLua('surface.PlaySound(\'horror/mission_failed.wav\')')
         v:StripAmmo()
         v:StripWeapons()
         v:SetNW2String('qtg_hr_missionfailed',s)
+
+        if IsValid(v.__deathsound) then
+            v.__deathsound:Stop()
+        end
     end
 
     timer.Simple(reloadtime,function()
@@ -78,7 +91,11 @@ function Horror.MissionFailed(s)
                 v:Freeze(false)
                 v:SetNW2String('qtg_hr_missionfailed','')
             end
-    
+
+            if IsValid(Horror.__missionfailedsound) then
+                Horror.__missionfailedsound:Stop()
+            end
+
             Horror.__restarting = false
         end)
     end)

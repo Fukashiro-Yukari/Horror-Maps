@@ -72,7 +72,16 @@ function GM:DoPlayerDeath(p,a,c)
 	end
 
 	p:SetNW2Float('QTG_Horror_ReSpawnTime',CurTime()+Retime)
-	p:SendLua('surface.PlaySound(\'horror/player_death.wav\')')
+
+	local f = RecipientFilter()
+	f:AddPlayer(p)
+
+	if !IsValid(p.__deathsound) then
+		p.__deathsound = CreateSound(p,'horror/player_death.wav',f)
+	end
+
+	p.__deathsound:SetSoundLevel(SNDLVL_NONE)
+	p.__deathsound:Play()
 end
 
 local lookmode = {
