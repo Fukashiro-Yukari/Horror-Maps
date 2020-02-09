@@ -50,7 +50,7 @@ function GM:AcceptInput(e,i,a,c,v)
             a:SetNW2Bool('qtg_hr_forcegivewep',true)
         end
 
-        if IsValid(e) and e:GetClass() == 'player_weaponstrip' and Horror.__crewept[a:GetActiveWeapon():GetClass()] then
+        if IsValid(e) and e:GetClass() == 'player_weaponstrip' and IsValid(a:GetActiveWeapon()) and Horror.__crewept[a:GetActiveWeapon():GetClass()] then
             return true
         end
     end
