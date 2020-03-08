@@ -1,22 +1,25 @@
 Horror.__crewept = {}
 Horror.__agivewept = {}
 
-function Horror.AddCantRemoveWep(s)
+function Horror.AddCantRemoveWep(s,b)
     Horror.__crewept[s] = s
 end
 
-function Horror.AddAutoGiveWep(s)
+function Horror.AddAutoGiveWep(s,b)
     local wt = weapons.Get(s)
 
     if istable(wt) then
         Horror.__agivewept[s] = s
     end
+
+    if b then return end
+
+    Horror.__crewept[s] = s
 end
 
 timer.Simple(0,function()
     local name = 'qtg_hr_item_'
 
-    Horror.AddCantRemoveWep(name..'lighter')
     Horror.AddAutoGiveWep(name..'lighter')
 end)
 

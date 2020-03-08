@@ -4,6 +4,12 @@ local pass = function() end
 CheckpointsDisabled = pass
 
 function Horror.MapChange(s)
+    if !file.Exists('maps/'..s..'.bsp','GAME') then
+        PrintMessage(HUD_PRINTTALK,'Next map not found! "'..s..'"')
+
+        return
+    end
+
 	for k, v in pairs(player.GetAll()) do
         v:ScreenFade(SCREENFADE.OUT,color_black,3,100)
         v:Freeze(true)
@@ -11,10 +17,6 @@ function Horror.MapChange(s)
 
     timer.Simple(4,function()
         game.ConsoleCommand('changelevel "'..s..'"\n')
-
-        timer.Simple(1,function()
-            PrintMessage(HUD_PRINTTALK,'Next map not found! "'..s..'"')
-        end)
     end)
 end
 
@@ -36,11 +38,9 @@ end
 
 FlashlightStatus = Horror.FlashlightStatus
 ForceRealismEnable = pass
-StartWithNothing = pass
 ForceBringDisable = pass
 ForceRealisticZombies = pass
 ForceRealisticHeadcrabs = pass
-StartWithNothing = pass
 ActivateCheckpoint = pass
 
 local reloadtime = 8
@@ -116,3 +116,9 @@ function Horror.NoHeadcrabs(b)
 end
 
 NoHeadcrabs = Horror.NoHeadcrabs
+
+function Horror.StartWithNothing(b)
+    Horror.__nospawnwep = b
+end
+
+StartWithNothing = Horror.StartWithNothing

@@ -777,6 +777,23 @@ function HrMenu:SettingMenu(pl)
 			Label:SetTextColor(Color(0,0,0))
 			Label:SetText('Players sprint durable')
 			Label:SizeToContents()
+
+			pos.y = pos.y+20
+
+			local Checkbox = pl:Add('DCheckBoxLabel')
+			Checkbox:SetPos(pos.x,pos.y)
+			Checkbox:SetText('All player death missions failed')
+			Checkbox:SetTextColor(Color(0,0,0))
+			Checkbox:SetConVar('horror_all_playerdeathfailed')
+			Checkbox:SizeToContents()
+			
+			pos.y = pos.y+20
+
+			local Label = pl:Add('DLabel')
+			Label:SetPos(pos.x,pos.y)
+			Label:SetTextColor(Color(0,50,255))
+			Label:SetText('If all players die, the mission fails')
+			Label:SizeToContents()
 		end)
 
 		Horror.AddSettingMenuTab(panels,'Client','icon16/cog.png',function(pl)

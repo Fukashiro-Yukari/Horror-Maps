@@ -1,4 +1,5 @@
 local sprint = Horror.GetConvar('sprint_durable')
+
 function GM:SetupMove(p,m,c)
 	if !p:Alive() then return end
 

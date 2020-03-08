@@ -35,6 +35,7 @@ Horror.AddConvar('player_ff',0)
 Horror.AddConvar('respawntime',30)
 Horror.AddConvar('ondeathdropweapon',1)
 Horror.AddConvar('sprint_durable',200)
+Horror.AddConvar('all_playerdeathfailed',1)
 
 Horror.AddConvar('menu_r',0,true)
 Horror.AddConvar('menu_g',0,true)

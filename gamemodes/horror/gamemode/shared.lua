@@ -1,6 +1,12 @@
 GM.Name = 'Horror Maps'
 GM.Author = 'Neptune QTG'
 
+function GM:Initialize()
+	if GetConVar('sv_defaultdeployspeed'):GetInt() != 1 then
+		game.ConsoleCommand('sv_defaultdeployspeed 1\n')
+	end
+end
+
 function GM:Think()
 	hook.Call('RemoveHook',GAMEMODE)
 	
@@ -49,7 +55,7 @@ function GM:PlayerTick(p,m)
 			end
 		end
 
-		if alive <= 0 then
+		if alive <= 0 and Horror.GetConvar('all_playerdeathfailed'):GetBool() then
 			Horror.MissionFailed('All players are dead')
 		end
 		

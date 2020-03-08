@@ -49,5 +49,13 @@
 			"type"		"Numeric"
 			"default"	"200"
 		}
+		6
+		{
+			"name"		"horror_all_playerdeathfailed"
+			"text"		"All player death missions failed"
+			"help"		"If all players die, the mission fails"
+			"type"		"CheckBox"
+			"default"	"0"
+		}
 	}
 }

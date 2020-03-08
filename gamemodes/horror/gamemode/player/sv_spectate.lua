@@ -144,15 +144,6 @@ local KeyPressFunc = {
 }
 
 function GM:KeyPress(p,k)
-	if k == IN_USE then
-		local t = util.TraceLine({
-			start  = p:GetShootPos(),
-			endpos = p:GetShootPos() + p:GetAimVector() * 80,
-			filter = p,
-			mask   = MASK_SHOT
-		})
-	end
-
 	if !p:Alive() then
 		if KeyPressFunc[k] then
 			KeyPressFunc[k](p)

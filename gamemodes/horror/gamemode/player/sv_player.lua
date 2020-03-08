@@ -1,9 +1,3 @@
-function GM:Initialize()
-	if GetConVar('sv_defaultdeployspeed'):GetInt() != 1 then
-		game.ConsoleCommand('sv_defaultdeployspeed 1\n')
-	end
-end
-
 local function ps(fr,to,fo)
 	if !to:IsInWorld() and not fo then return false end -- No way we can do this one
 
@@ -300,30 +294,45 @@ local GiveWeapon = {
 	{},
 	{},
 	{},
+	{},
 	{}
 }
 
 function GM:PlayerLoadout(p)
 	p:RemoveAllAmmo()
 
-	if !table.IsEmpty(GiveWeapon[1]) then
-		p:Give(table.Random(GiveWeapon[1]),false,true)
+	if !Horror.__ispawnwep then
+		Horror.__ispawnwep = true
+
+		for k,v in pairs(ents.FindByClass('weapon_crowbar')) do
+			if IsValid(v) and v:GetOwner() == NULL then
+				Horror.StartWithNothing(true)
+			end
+		end
 	end
 
-	if !table.IsEmpty(GiveWeapon[2]) then
-		p:Give(table.Random(GiveWeapon[2]),false,true)
+	if Horror.__nospawnwep then return end
+
+	local wept = GiveWeapon
+
+	if !table.IsEmpty(Horror.GetMapInfo()) then
+		local t = Horror.GetMapInfo()
+
+		if t.PlayerLoadout then
+			wept = t.PlayerLoadout
+		end
 	end
 
-	if !table.IsEmpty(GiveWeapon[3]) then
-		p:Give(table.Random(GiveWeapon[3]),false,true)
+	for i = 1,5 do
+		if !table.IsEmpty(wept[i]) then
+			p:Give(table.Random(wept[i]),false,true)
+		end
 	end
 
-	if !table.IsEmpty(GiveWeapon[4]) then
-		p:Give(table.Random(GiveWeapon[4]),false,true)
-	end
-
-	if !table.IsEmpty(GiveWeapon[5]) then
-		p:Give(table.Random(GiveWeapon[5]),false,true)
+	if !table.IsEmpty(wept[6]) then
+		for k,v in pairs(wept[6]) do
+			p:Give(v,false,true)
+		end
 	end
 end
 

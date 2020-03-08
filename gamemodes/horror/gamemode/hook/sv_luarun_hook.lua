@@ -20,6 +20,23 @@ local function shit()
         return old(self,ac,ca,co)
     end
 
+    function ENT:SetupGlobals(a,c)
+        ACTIVATOR = a
+        CALLER = c
+        LUARUN = self
+    
+        if IsValid(a) and a:IsPlayer() then
+            TRIGGER_PLAYER = a
+        end
+    end
+    
+    function ENT:KillGlobals()
+        ACTIVATOR = nil
+        CALLER = nil
+        TRIGGER_PLAYER = nil
+        LUARUN = nil
+    end
+
     scripted_ents.Register(ENT,'lua_run')
 end
 
