@@ -55,7 +55,7 @@ function GM:PlayerTick(p,m)
 			end
 		end
 
-		if alive <= 0 and Horror.GetConvar('all_playerdeathfailed'):GetBool() then
+		if #player.GetAll() > 1 and alive <= 0 and Horror.GetConvar('all_playerdeathfailed'):GetBool() then
 			Horror.MissionFailed('All players are dead')
 		end
 		

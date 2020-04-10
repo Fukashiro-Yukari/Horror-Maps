@@ -304,8 +304,8 @@ function GM:PlayerLoadout(p)
 	if !Horror.__ispawnwep then
 		Horror.__ispawnwep = true
 
-		for k,v in pairs(ents.FindByClass('weapon_crowbar')) do
-			if IsValid(v) and v:GetOwner() == NULL then
+		for k,v in pairs(ents.GetAll()) do
+			if IsValid(v) and v:IsWeapon() and v:GetOwner() == NULL then
 				Horror.StartWithNothing(true)
 			end
 		end

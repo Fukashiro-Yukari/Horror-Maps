@@ -30,13 +30,13 @@ end
 
 AllFrozen = Horror.AllFrozen
 
-function Horror.FlashlightStatus(b)
+function Horror.AllowFlashlight(b)
     for k,v in pairs(player.GetAll()) do
         v:AllowFlashlight(b)
     end
 end
 
-FlashlightStatus = Horror.FlashlightStatus
+FlashlightStatus = Horror.AllowFlashlight
 ForceRealismEnable = pass
 ForceBringDisable = pass
 ForceRealisticZombies = pass
@@ -108,6 +108,10 @@ function Horror.GiveMission(s,e)
 
     for k,v in pairs(player.GetAll()) do
         v:SetNW2String('qtg_hr_currentmission',s)
+    end
+
+    if IsValid(e) then
+        Horror.__currentmissionent = e
     end
 end
 
